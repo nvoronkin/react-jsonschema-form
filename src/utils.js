@@ -4,6 +4,7 @@ import UpDownWidget from "./components/widgets/UpDownWidget";
 import RangeWidget from "./components/widgets/RangeWidget";
 import SelectWidget from "./components/widgets/SelectWidget";
 import TextareaWidget from "./components/widgets/TextareaWidget";
+import HiddenWidget from "./components/widgets/HiddenWidget";
 
 
 const altWidgetMap = {
@@ -35,6 +36,7 @@ export function defaultTypeValue(type) {
   case "number":    return 0;
   case "object":    return {};
   case "string":    return "";
+  case "hidden":    return "";
   default:        return undefined;
   }
 }

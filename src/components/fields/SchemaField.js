@@ -5,6 +5,7 @@ import BooleanField from "./BooleanField";
 import NumberField from "./NumberField";
 import ObjectField from "./ObjectField";
 import StringField from "./StringField";
+import HiddenField from "./HiddenField";
 import UnsupportedField from "./UnsupportedField";
 
 const REQUIRED_FIELD_SYMBOL = "*";
@@ -16,6 +17,7 @@ const COMPONENT_TYPES = {
   "number":    NumberField,
   "object":    ObjectField,
   "string":    StringField,
+  "hidden":    HiddenField,
 };
 
 
@@ -29,23 +31,32 @@ function getLabel(label, required) {
   return label;
 }
 
-function getContent({type, label, required, children}) {
+function getContent({type, label, required, children, hidden}) {
   if (["object", "array"].indexOf(type) !==-1) {
     return children;
   }
   return (
-    <label>
-      {getLabel(label, required)}
-      {children}
-    </label>
+    <div>
+    { hidden ? <div>{children}</div> :
+      <label>
+        {getLabel(label, required)}
+        {children}
+      </label>
+
+    }
+  </div>
   );
 }
 
 function Wrapper(props) {
-  const {type, classNames} = props;
+  const {type, classNames, hidden} = props;
   return (
-    <div className={`field field-${type} ${classNames}`}>
-      {getContent(props)}
+    <div>
+      {hidden ? getContent(props) :
+        <div className={`field field-${type} ${classNames}`}>
+          {getContent(props)}
+        </div>
+      }
     </div>
   );
 }
@@ -66,13 +77,14 @@ Wrapper.defaultProps = {
 
 function SchemaField(props) {
   const {schema, uiSchema, name, required} = props;
-  const FieldComponent = COMPONENT_TYPES[schema.type] || UnsupportedField;
+  const hidden = uiSchema.hidden || false
+  const FieldComponent = hidden ? COMPONENT_TYPES['hidden'] : ( COMPONENT_TYPES[schema.type] || UnsupportedField );
   return (
     <Wrapper
       label={schema.title || name}
       required={required}
       type={schema.type}
-      classNames={uiSchema.classNames}>
+      classNames={uiSchema.classNames} hidden={hidden}>
       <FieldComponent {...props} />
     </Wrapper>
   );
